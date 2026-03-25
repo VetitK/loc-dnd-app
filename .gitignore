@@ -1,0 +1,7 @@
+node_modules/
+*.docx
+*.pdf
+*.xlsx
+*.md
+.next/
+.claude/
