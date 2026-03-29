@@ -10,6 +10,16 @@ const Badge = ({ text, color = '#64748b' }: { text: string; color?: string }) =>
   <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold" style={{ background: color + '22', color }}>{text}</span>
 );
 
+const MON_EMOJI: Record<string, string> = {
+  goblin: '🗡️', skeleton: '💀', slime: '🟢', slime_king: '👑',
+  dark_knight: '⚔️', flame_serpent: '🐍', lich: '☠️',
+};
+
+// Map item name → image filename slug
+const itemSlug = (name: string) => name.toLowerCase().replace(/[:]/g, '').replace(/\s+/g, '-');
+
+const rankColor = (r: string) => r === 'C' ? '#22c55e' : r === 'B' ? '#3b82f6' : r === 'A' ? '#ef4444' : r === 'S' ? '#a78bfa' : '#f59e0b';
+
 export default function ReferencePage() {
   const [section, setSection] = useState<'classes' | 'monsters' | 'items' | 'rules'>('classes');
 
@@ -35,18 +45,33 @@ export default function ReferencePage() {
         <div className="space-y-4">
           {CLASSES.map(cls => (
             <Panel key={cls.name}>
-              <div className="flex items-center gap-2 mb-3">
-                <span className="text-2xl">{cls.emoji}</span>
-                <div>
-                  <h3 className="text-base font-bold" style={{ color: cls.color }}>{cls.name}</h3>
-                  <p className="text-[10px] text-slate-500">HP: {cls.hp} | AC: {cls.ac} | อุปกรณ์: {cls.equipment.join(', ')}</p>
+              <div className="flex gap-4 mb-3">
+                {/* Character card image */}
+                <div className="w-24 shrink-0 rounded-lg overflow-hidden border border-slate-700/30" style={{ aspectRatio: '63.5/88' }}>
+                  <img src={`/cards/classes/${cls.name.toLowerCase()}.png`} alt={cls.name} className="w-full h-full object-cover" />
+                </div>
+                {/* Name + stats */}
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-lg font-extrabold" style={{ color: cls.color }}>{cls.emoji} {cls.name}</h3>
+                  <div className="flex gap-3 mt-1">
+                    <div className="bg-[#0a0e1a] rounded px-2 py-1 text-center">
+                      <div className="text-[9px] text-slate-500">HP</div>
+                      <div className="text-red-400 font-extrabold text-lg">{cls.hp}</div>
+                    </div>
+                    <div className="bg-[#0a0e1a] rounded px-2 py-1 text-center">
+                      <div className="text-[9px] text-slate-500">AC</div>
+                      <div className="text-blue-400 font-extrabold text-lg">{cls.ac}</div>
+                    </div>
+                  </div>
+                  <p className="text-[10px] text-slate-500 mt-1">{cls.equipment.join(', ')}</p>
                 </div>
               </div>
+              {/* Skills */}
               <div className="space-y-2">
                 {cls.skills.map(sk => (
                   <div key={sk.name} className="flex items-start gap-2 p-2 rounded-lg bg-[#0a0e1a]">
                     <div className="flex-1">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
                         <span className="text-xs font-bold text-white">{sk.name}</span>
                         {sk.unlock && <Badge text="ปลดล็อค" color="#3b82f6" />}
                         {sk.singleUse && <Badge text="ใช้ครั้งเดียว" color="#ef4444" />}
@@ -55,7 +80,7 @@ export default function ReferencePage() {
                       <p className="text-[11px] text-slate-400 mt-1">{sk.description}</p>
                     </div>
                     {sk.dice.length > 0 && (
-                      <span className="text-xs text-amber-400 font-mono bg-amber-400/10 px-2 py-0.5 rounded">
+                      <span className="text-xs text-amber-400 font-mono bg-amber-400/10 px-2 py-0.5 rounded shrink-0">
                         {sk.dice.map(d => `d${d}`).join('+')}
                       </span>
                     )}
@@ -75,26 +100,36 @@ export default function ReferencePage() {
               <h3 className="text-xs font-bold text-slate-500 mb-2">RANK {rank}</h3>
               {MONSTERS.filter(m => m.rank === rank).map(m => (
                 <Panel key={m.id} className="mb-3">
-                  <div className="flex items-center justify-between mb-2">
-                    <div>
-                      <h4 className="text-sm font-bold text-white">{m.name} <span className="text-slate-500">({m.nameTH})</span></h4>
-                      <p className="text-[10px] text-slate-500">Cooldown: {m.cooldown} นาที | Loot: {m.lootLoc} LOC</p>
+                  <div className="flex gap-3 mb-2">
+                    {/* Monster image */}
+                    <div className="w-16 shrink-0 rounded-lg overflow-hidden border border-slate-700/30" style={{ aspectRatio: '63.5/88' }}>
+                      <img src={`/cards/monsters/${m.id}.png`} alt={m.name} className="w-full h-full object-cover" />
                     </div>
-                    <Badge text={`Rank ${m.rank}`} color={m.rank === 'C' ? '#22c55e' : m.rank === 'B' ? '#3b82f6' : '#ef4444'} />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-1">
+                        <div>
+                          <h4 className="text-sm font-bold text-white leading-tight">{m.name}</h4>
+                          <p className="text-[10px] text-slate-500">{m.nameTH}</p>
+                        </div>
+                        <Badge text={`${m.rank}`} color={rankColor(m.rank)} />
+                      </div>
+                      <p className="text-[10px] text-slate-500 mt-1">CD: {m.cooldown}m | {m.lootLoc} LOC</p>
+                    </div>
                   </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-2 text-[11px]">
-                    <div className="bg-[#0a0e1a] rounded p-2"><span className="text-slate-500">HP</span><br /><span className="text-red-400 font-bold text-lg">{m.hp}</span></div>
-                    <div className="bg-[#0a0e1a] rounded p-2"><span className="text-slate-500">AC</span><br /><span className="text-blue-400 font-bold text-lg">{m.ac}</span></div>
-                    <div className="bg-[#0a0e1a] rounded p-2"><span className="text-slate-500">Attack</span><br /><span className="text-amber-400 font-bold">{m.atk.map(d => `d${d}`).join('+')} {DMG_EMOJI[m.atkType]}</span></div>
-                    <div className="bg-[#0a0e1a] rounded p-2"><span className="text-slate-500">Target</span><br /><span className="text-white font-bold text-[10px]">{m.target}</span></div>
+                  <div className="grid grid-cols-4 gap-1.5 mb-2 text-[11px]">
+                    <div className="bg-[#0a0e1a] rounded p-1.5 text-center"><span className="text-[9px] text-slate-500">HP</span><br /><span className="text-red-400 font-bold">{m.hp}</span></div>
+                    <div className="bg-[#0a0e1a] rounded p-1.5 text-center"><span className="text-[9px] text-slate-500">AC</span><br /><span className="text-blue-400 font-bold">{m.ac}</span></div>
+                    <div className="bg-[#0a0e1a] rounded p-1.5 text-center"><span className="text-[9px] text-slate-500">ATK</span><br /><span className="text-amber-400 font-bold text-[10px]">{m.atk.map(d => `d${d}`).join('+')}</span></div>
+                    <div className="bg-[#0a0e1a] rounded p-1.5 text-center"><span className="text-[9px] text-slate-500">DMG</span><br /><span className="font-bold text-[10px]" style={{ color: DMG_COLORS[m.atkType] }}>{DMG_EMOJI[m.atkType]}</span></div>
                   </div>
-                  <div className="flex gap-2 flex-wrap text-[10px]">
-                    {m.vulnerable.length > 0 && <span className="text-red-400">Vuln: {m.vulnerable.map(v => `${DMG_EMOJI[v]}${v}`).join(', ')}</span>}
-                    {m.resistant.length > 0 && <span className="text-yellow-400">Resist: {m.resistant.map(v => `${DMG_EMOJI[v]}${v}`).join(', ')}</span>}
-                    {m.immune.length > 0 && <span className="text-slate-400">Immune: {m.immune.map(v => `${DMG_EMOJI[v]}${v}`).join(', ')}</span>}
+                  <div className="flex gap-1.5 flex-wrap text-[10px]">
+                    {m.vulnerable.length > 0 && <span className="bg-red-500/10 text-red-400 px-1.5 py-0.5 rounded">Vuln: {m.vulnerable.map(v => `${DMG_EMOJI[v]}${v}`).join(', ')}</span>}
+                    {m.resistant.length > 0 && <span className="bg-yellow-500/10 text-yellow-400 px-1.5 py-0.5 rounded">Resist: {m.resistant.map(v => `${DMG_EMOJI[v]}${v}`).join(', ')}</span>}
+                    {m.immune.length > 0 && <span className="bg-slate-500/10 text-slate-400 px-1.5 py-0.5 rounded">Immune: {m.immune.map(v => `${DMG_EMOJI[v]}${v}`).join(', ')}</span>}
                   </div>
                   {m.special && <p className="text-[10px] text-purple-400 mt-2 italic">{m.special}</p>}
                   {m.aoe && <p className="text-[10px] text-orange-400 mt-1">AoE ทุก {m.aoe.every} เทิร์น: {m.aoe.dice.map(d => `d${d}`).join('+')} {DMG_EMOJI[m.aoe.type]}</p>}
+                  {m.selfHeal && <p className="text-[10px] text-green-400 mt-1">Self Heal ทุก {m.selfHeal.every} เทิร์น: {m.selfHeal.dice.map(d => `d${d}`).join('+')}</p>}
                   {m.drain && <p className="text-[10px] text-purple-400 mt-1">Drain ทุก {m.drain.every} เทิร์น: {m.drain.dice.map(d => `d${d}`).join('+')}</p>}
                   {m.phase2 && <p className="text-[10px] text-red-400 mt-1">Phase 2: ฟื้น {m.phase2.hp} HP, โจมตี {m.phase2.atk.map(d => `d${d}`).join('+')}</p>}
                 </Panel>
@@ -105,18 +140,35 @@ export default function ReferencePage() {
           {/* Duo */}
           <h3 className="text-xs font-bold text-slate-500 mb-2">RANK S (DUO)</h3>
           <Panel>
-            <h4 className="text-sm font-bold text-purple-400 mb-2">{DUO.name} <span className="text-slate-500">({DUO.nameTH})</span></h4>
+            <div className="flex gap-3 mb-3">
+              <div className="w-16 shrink-0 rounded-lg overflow-hidden border border-slate-700/30" style={{ aspectRatio: '63.5/88' }}>
+                <img src="/cards/monsters/duo.png" alt="Duo" className="w-full h-full object-cover" />
+              </div>
+              <div>
+                <h4 className="text-sm font-bold text-purple-400">{DUO.name}</h4>
+                <p className="text-[10px] text-slate-500">{DUO.nameTH}</p>
+                <p className="text-[10px] text-slate-500 mt-1">CD: {DUO.cooldown}m | {DUO.lootLoc} LOC</p>
+              </div>
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="bg-[#0a0e1a] rounded-lg p-3">
                 <h5 className="text-xs font-bold text-amber-400 mb-1">{DUO.queen.name}</h5>
-                <p className="text-[10px] text-slate-400">HP: {DUO.queen.hp} | AC: {DUO.queen.ac} | Atk: {DUO.queen.atk.map(d => `d${d}`).join('+')} {DMG_EMOJI[DUO.queen.atkType]}</p>
+                <div className="flex gap-2 mb-1">
+                  <span className="text-[10px] bg-red-500/10 text-red-400 px-1.5 py-0.5 rounded">HP {DUO.queen.hp}</span>
+                  <span className="text-[10px] bg-blue-500/10 text-blue-400 px-1.5 py-0.5 rounded">AC {DUO.queen.ac}</span>
+                  <span className="text-[10px] bg-amber-500/10 text-amber-400 px-1.5 py-0.5 rounded">{DUO.queen.atk.map(d => `d${d}`).join('+')} {DMG_EMOJI[DUO.queen.atkType]}</span>
+                </div>
                 <p className="text-[10px] text-red-400">Vuln: {DUO.queen.vulnerable.join(', ')}{DUO.queen.resistant.length > 0 && ` | Resist: ${DUO.queen.resistant.join(', ')}`} | Immune: {DUO.queen.immune.join(', ')}</p>
                 <p className="text-[10px] text-purple-400">Debuff ทุก {DUO.queen.debuffEvery}t | Buff King ทุก {DUO.queen.buffKingEvery}t</p>
               </div>
               <div className="bg-[#0a0e1a] rounded-lg p-3">
                 <h5 className="text-xs font-bold text-red-400 mb-1">{DUO.king.name}</h5>
-                <p className="text-[10px] text-slate-400">HP: {DUO.king.hp} | AC: {DUO.king.ac} | Atk: {DUO.king.atk.map(d => `d${d}`).join('+')} {DMG_EMOJI[DUO.king.atkType]}</p>
-                <p className="text-[10px] text-red-400">Vuln: {DUO.king.vulnerable.join(', ')}{DUO.king.resistant.length > 0 && ` | Resist: ${DUO.king.resistant.join(', ')}`}{DUO.king.immune.length > 0 && ` | Immune: ${DUO.king.immune.join(', ')}`}</p>
+                <div className="flex gap-2 mb-1">
+                  <span className="text-[10px] bg-red-500/10 text-red-400 px-1.5 py-0.5 rounded">HP {DUO.king.hp}</span>
+                  <span className="text-[10px] bg-blue-500/10 text-blue-400 px-1.5 py-0.5 rounded">AC {DUO.king.ac}</span>
+                  <span className="text-[10px] bg-amber-500/10 text-amber-400 px-1.5 py-0.5 rounded">{DUO.king.atk.map(d => `d${d}`).join('+')} {DMG_EMOJI[DUO.king.atkType]}</span>
+                </div>
+                <p className="text-[10px] text-red-400">Vuln: {DUO.king.vulnerable.join(', ')}{DUO.king.resistant.length > 0 && ` | Resist: ${DUO.king.resistant.join(', ')}`}</p>
                 <p className="text-[10px] text-orange-400">AoE ทุก {DUO.king.aoe.every}t: {DUO.king.aoe.dice.map(d => `d${d}`).join('+')}</p>
               </div>
             </div>
@@ -125,31 +177,50 @@ export default function ReferencePage() {
           {/* Boss */}
           <h3 className="text-xs font-bold text-slate-500 mb-2 mt-4">BOSS</h3>
           <Panel>
-            <h4 className="text-sm font-bold text-red-500 mb-2">👹 {BOSS.name} <span className="text-slate-500">({BOSS.nameTH})</span></h4>
-            <p className="text-[11px] text-slate-400">AC: {BOSS.ac} | Atk: {BOSS.atk.map(d => `d${d}`).join('+')} {DMG_EMOJI[BOSS.atkType]} | ไม่มีวันตาย</p>
+            <div className="flex gap-3 mb-2">
+              <div className="w-16 shrink-0 rounded-lg overflow-hidden border border-slate-700/30" style={{ aspectRatio: '63.5/88' }}>
+                <img src="/cards/monsters/boss.png" alt="Boss" className="w-full h-full object-cover" />
+              </div>
+              <div>
+                <h4 className="text-sm font-bold text-red-500">{BOSS.name}</h4>
+                <p className="text-[10px] text-slate-500">{BOSS.nameTH}</p>
+                <div className="flex gap-2 mt-1">
+                  <span className="text-[10px] bg-blue-500/10 text-blue-400 px-1.5 py-0.5 rounded">AC {BOSS.ac}</span>
+                  <span className="text-[10px] bg-amber-500/10 text-amber-400 px-1.5 py-0.5 rounded">{BOSS.atk.map(d => `d${d}`).join('+')} {DMG_EMOJI[BOSS.atkType]}</span>
+                  <span className="text-[10px] bg-red-500/10 text-red-400 px-1.5 py-0.5 rounded">ไม่มีวันตาย</span>
+                </div>
+              </div>
+            </div>
             <p className="text-[10px] text-red-400">Vuln: {BOSS.vulnerable.join(', ')} | Resist: {BOSS.resistant.join(', ')} | Immune: {BOSS.immune.join(', ')}</p>
-            <p className="text-[10px] text-orange-400">AoE ทุก {BOSS.aoe.every}t | Rage ทุก {BOSS.rage.every}t: {BOSS.rage.dice.map(d => `d${d}`).join('+')}</p>
+            <p className="text-[10px] text-orange-400 mt-1">AoE ทุก {BOSS.aoe.every}t: {BOSS.aoe.dice.map(d => `d${d}`).join('+')} | Rage ทุก {BOSS.rage.every}t: {BOSS.rage.dice.map(d => `d${d}`).join('+')} → {BOSS.rage.target}</p>
           </Panel>
         </div>
       )}
 
       {/* Items */}
       {section === 'items' && (
-        <div className="space-y-2">
-          <h3 className="text-xs font-bold text-slate-500 mb-2">🛒 ร้านค้า (ทุกไอเทม)</h3>
-          {SHOP_ITEMS.map(item => (
-            <Panel key={item.name} className="mb-2">
-              <div className="flex items-center justify-between">
-                <div>
-                  <span className="text-xs font-bold text-white">{item.name}</span>
-                  <Badge text={item.type} color={item.type === 'consumable' ? '#22c55e' : item.type === 'passive' ? '#3b82f6' : item.type === 'skill_unlock' ? '#a78bfa' : '#f59e0b'} />
-                  {item.forClass && <Badge text={item.forClass} color={CLASSES.find(c => c.name === item.forClass)?.color || '#94a3b8'} />}
+        <div>
+          <h3 className="text-xs font-bold text-slate-500 mb-3">🛒 ร้านค้า (ทุกไอเทม)</h3>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            {SHOP_ITEMS.map(item => (
+              <div key={item.name} className="bg-[#111827] border border-[#1e293b] rounded-xl overflow-hidden">
+                {/* Item image */}
+                <div className="w-full bg-gradient-to-b from-slate-800/50 to-slate-900/80 flex items-center justify-center" style={{ aspectRatio: '63.5/88' }}>
+                  <img src={`/cards/items/${itemSlug(item.name)}.png`} alt={item.name} className="w-full h-full object-cover"
+                    onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
                 </div>
-                <span className="text-amber-400 font-bold text-sm">{item.cost} LOC</span>
+                <div className="p-2">
+                  <div className="text-[11px] font-bold text-white leading-tight">{item.name}</div>
+                  <div className="flex items-center gap-1 mt-1 flex-wrap">
+                    <Badge text={item.type} color={item.type === 'consumable' ? '#22c55e' : item.type === 'passive' ? '#3b82f6' : item.type === 'skill_unlock' ? '#a78bfa' : '#f59e0b'} />
+                    {item.forClass && <Badge text={item.forClass} color={CLASSES.find(c => c.name === item.forClass)?.color || '#94a3b8'} />}
+                  </div>
+                  <div className="text-amber-400 font-bold text-sm mt-1">{item.cost} LOC</div>
+                  <p className="text-[9px] text-slate-400 mt-1 leading-tight">{item.effect}</p>
+                </div>
               </div>
-              <p className="text-[10px] text-slate-400 mt-1">{item.effect}</p>
-            </Panel>
-          ))}
+            ))}
+          </div>
         </div>
       )}
 

@@ -5,3 +5,4 @@ node_modules/
 *.md
 .next/
 .claude/
+.DS_Store
