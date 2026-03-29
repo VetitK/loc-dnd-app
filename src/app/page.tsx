@@ -10,12 +10,12 @@ const TABS = [
   { id: 'ref', label: '📚 Reference', emoji: '📚' },
   { id: 'combat', label: '⚔️ Combat', emoji: '⚔️' },
   { id: 'loot', label: '🎲 Loot', emoji: '🎲' },
-  { id: 'map', label: '🗺️ Map', emoji: '🗺️' },
   { id: 'sim', label: '📊 Simulator', emoji: '📊' },
 ];
 
 export default function Home() {
   const [tab, setTab] = useState('ref');
+  const [mapOpen, setMapOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-[#0a0e1a]">
@@ -48,13 +48,40 @@ export default function Home() {
       </div>
 
       {/* Content */}
-      <div className="max-w-5xl mx-auto px-4 py-4">
+      <div className="max-w-5xl mx-auto px-4 py-4 pb-24">
         {tab === 'ref' && <ReferencePage />}
         {tab === 'combat' && <CombatTracker />}
         {tab === 'loot' && <LootRoller />}
-        {tab === 'map' && <GameMap />}
         {tab === 'sim' && <Simulator />}
       </div>
+
+      {/* Floating Map Button */}
+      <button
+        onClick={() => setMapOpen(true)}
+        className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 text-white text-2xl shadow-lg shadow-amber-500/30 flex items-center justify-center hover:scale-105 active:scale-95 transition-transform z-40"
+      >
+        🗺️
+      </button>
+
+      {/* Map Modal */}
+      {mapOpen && (
+        <div className="fixed inset-0 z-50 flex flex-col bg-[#0a0e1a]">
+          {/* Modal header */}
+          <div className="shrink-0 flex items-center justify-between px-4 py-3 bg-[#111827] border-b border-[#1e293b]">
+            <h2 className="text-base font-bold text-white">🗺️ Dungeon Map</h2>
+            <button
+              onClick={() => setMapOpen(false)}
+              className="w-9 h-9 rounded-lg bg-[#1e293b] text-slate-400 flex items-center justify-center text-lg font-bold hover:text-white hover:bg-[#334155] transition-colors"
+            >
+              ✕
+            </button>
+          </div>
+          {/* Modal body */}
+          <div className="flex-1 overflow-y-auto px-4 py-4">
+            <GameMap />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
