@@ -107,7 +107,7 @@ export const CLASSES: CharClass[] = [
     skills: [
       { name: 'Heal', dice: [6, 4], type: 'heal', description: 'ฮีล HP เพื่อน 1 คน = 1d6+1d4 HP' },
       { name: 'Amplify Damage', dice: [6], type: 'buff', description: 'บัฟ damage ตัวละคร 1 คน +1d6 เทิร์นถัดไป' },
-      { name: 'Armor Break', dice: [], type: 'debuff', description: 'ลด AC มอนฯ ลงครึ่งหนึ่ง 1 เทิร์น', unlock: true },
+      { name: 'Armor Break', dice: [], type: 'debuff', description: 'ลด AC มอนฯ -3 เป็นเวลา 1 เทิร์น', unlock: true },
       { name: 'Daze', dice: [], type: 'debuff', description: 'มอนฯ ติด Disadvantage 1 เทิร์น', unlock: true },
       { name: 'Empower', dice: [], type: 'buff', description: 'เพื่อน 1 คน ติด Advantage 1 เทิร์น', unlock: true },
     ],
@@ -121,7 +121,7 @@ export const CLASSES: CharClass[] = [
       { name: 'Frost Bolt', dice: [6, 4], dmgType: 'Frost', type: 'atk', description: 'Frost Damage 1d6+1d4 ❄️', unlock: true },
       { name: 'Lightning', dice: [6, 6], dmgType: 'Lightning', type: 'atk', description: 'Lightning Damage 2d6 ⚡', unlock: true },
       { name: 'Necrotic Blast', dice: [6, 6], dmgType: 'Necrotic', type: 'atk', description: 'Necrotic Damage 2d6 💀', unlock: true },
-      { name: 'Holy Light', dice: [6, 6, 6], dmgType: 'Holy', type: 'atk', description: 'Holy Damage 3d6 🌟', unlock: true },
+      { name: 'Holy Strike', dice: [6, 6, 6], dmgType: 'Holy', type: 'atk', description: 'Holy Damage 3d6 🌟', unlock: true },
     ],
   },
 ];
@@ -130,14 +130,14 @@ export const CLASSES: CharClass[] = [
 export const MONSTERS: Monster[] = [
   {
     id: 'goblin', name: 'Goblin Scout', nameTH: 'ก็อบลินลาดตระเวน', rank: 'C',
-    hp: 14, ac: 5, atk: [6, 4], atkType: 'Physical', target: 'lowest_hp',
+    hp: 18, ac: 5, atk: [6, 4], atkType: 'Physical', target: 'last_attacker',
     vulnerable: [], resistant: [], immune: [], lootLoc: 15, cooldown: 2,
-    drops: [{ name: 'Potion of Healing', chance: 0.5 }],
+    drops: [{ name: 'Potion of Healing', chance: 1 }],
     special: 'เคลื่อนที่เร็ว แต่อ่อนแอ เหมาะฟาร์มเงิน',
   },
   {
     id: 'skeleton', name: 'Skeleton Warrior', nameTH: 'โครงกระดูกนักรบ', rank: 'C',
-    hp: 16, ac: 6, atk: [6, 6], atkType: 'Physical', target: 'last_attacker',
+    hp: 20, ac: 6, atk: [6, 6], atkType: 'Physical', target: 'init_cycle',
     vulnerable: [], resistant: [], immune: ['Necrotic'], lootLoc: 20, cooldown: 2,
     aoe: { every: 2, dice: [6, 4], type: 'Physical' },
     drops: [
@@ -149,56 +149,58 @@ export const MONSTERS: Monster[] = [
   },
   {
     id: 'slime', name: 'Slime', nameTH: 'สไลม์เหนียว', rank: 'C',
-    hp: 12, ac: 5, atk: [6, 4], atkType: 'Physical', target: 'first_init',
+    hp: 16, ac: 5, atk: [6, 4], atkType: 'Physical', target: 'random',
     vulnerable: [], resistant: [], immune: [], lootLoc: 20, cooldown: 2,
-    drops: [{ name: 'Random Scroll', chance: 0.2 }],
+    drops: [{ name: 'Random Scroll', chance: 0.25 }],
     special: 'ทำให้มึนงง (Disadvantage) | ตาย 3 ครั้ง (รวมทุกทีม) = Slime King',
   },
   {
     id: 'slime_king', name: 'Slime King', nameTH: 'ราชาสไลม์', rank: 'A',
-    hp: 48, ac: 12, atk: [6, 6], atkType: 'Physical', target: 'init_cycle',
+    hp: 16, ac: 10, atk: [6, 6], atkType: 'Physical', target: 'init_cycle',
     vulnerable: ['Lightning'], resistant: ['Physical'], immune: ['Frost'],
     lootLoc: 70, cooldown: 0,
     drops: [
       { name: 'Random Item', chance: 1 },
-      { name: 'Random Scroll', chance: 1 },
+      { name: 'Random Scroll', chance: 0.5 },
     ],
     special: 'Slime วิวัฒนาการ! โจมตีวนตาม Initiative สูง→ต่ำ | ฆ่าแล้วกลับเป็น Slime ปกติ รีเซ็ตตัวนับ',
   },
   {
     id: 'dark_knight', name: 'Dark Knight', nameTH: 'อัศวินทมิฬ', rank: 'B',
-    hp: 20, ac: 6, atk: [6, 6, 4], atkType: 'Physical', target: 'last_attacker',
+    hp: 13, ac: 8, atk: [6, 6], atkType: 'Physical', target: 'last_attacker',
     vulnerable: ['Holy', 'Lightning'], resistant: ['Physical'], immune: ['Necrotic'],
-    lootLoc: 30, cooldown: 3,
-    aoe: { every: 2, dice: [6, 4], type: 'Physical' },
+    lootLoc: 40, cooldown: 3,
     drops: [
+      { name: 'Iron Ring', chance: 1 },
       { name: 'Scroll: Lightning', chance: 0.4 },
-      { name: 'Iron Ring', chance: 0.3 },
       { name: 'Scroll: Armor Break', chance: 0.2 },
     ],
     special: 'เกราะหนัก AC สูง ต้องใช้ Armor Break หรือ Elemental',
   },
   {
     id: 'flame_serpent', name: 'Flame Serpent', nameTH: 'งูเพลิง', rank: 'B',
-    hp: 28, ac: 8, atk: [6, 6], atkType: 'Fire', target: 'highest_hp',
+    hp: 40, ac: 6, atk: [6, 6, 4], atkType: 'Fire', target: 'last_attacker',
     vulnerable: ['Frost'], resistant: [], immune: ['Fire'],
     lootLoc: 45, cooldown: 3,
-    selfHeal: { every: 3, dice: [4] },
+    selfHeal: { every: 3, dice: [6] },
     drops: [
       { name: 'Scroll: Necrotic Blast', chance: 0.3 },
       { name: 'Potion of Healing', chance: 1 },
-      { name: 'Scroll: Daze', chance: 0.3 },
+      { name: 'Scroll: Empower', chance: 0.3 },
     ],
     special: 'ฮีลตัวเองทุก 3 เทิร์น | Immune ต่อ Fire (ฮีลถ้าโดนไฟ)',
   },
   {
     id: 'lich', name: 'Lich King', nameTH: 'พ่อมดมรณะ', rank: 'A',
-    hp: 24, ac: 7, atk: [6, 6], atkType: 'Necrotic', target: 'most_dmg',
-    vulnerable: ['Fire', 'Holy'], resistant: ['Frost'], immune: ['Necrotic'],
-    lootLoc: 60, cooldown: 5,
-    drain: { every: 2, dice: [6, 4] },
+    hp: 44, ac: 7, atk: [6, 6, 4], atkType: 'Necrotic', target: 'highest_hp',
+    vulnerable: ['Holy'], resistant: ['Frost'], immune: ['Necrotic'],
+    lootLoc: 65, cooldown: 0,
+    drain: { every: 3, dice: [6, 6] },
     phase2: { hp: 12, atk: [6, 6, 6] },
-    drops: [{ name: 'Lich Crown', chance: 1 }],
+    drops: [
+      { name: 'Lich Crown', chance: 1 },
+      { name: 'Scroll: Taunt', chance: 0.5 },
+    ],
     special: 'ดูด HP ฮีลตัวเอง | Phase 2: ฟื้นด้วย 10 HP หลังตาย โจมตีแรงขึ้น',
   },
 ];
@@ -206,19 +208,19 @@ export const MONSTERS: Monster[] = [
 // ============ DUO ============
 export const DUO: DuoConfig = {
   name: 'Queen Divine & King Conquer', nameTH: 'ราชินีแดนสรวง & ราชาผู้พิชิต',
-  rank: 'S', lootLoc: 100, cooldown: 10,
+  rank: 'S', lootLoc: 100, cooldown: 8,
   drops: [
-    { name: 'Scroll: Holy Light', chance: 1 },
+    { name: 'Scroll: Holy Strike', chance: 1 },
     { name: 'Phoenix Feather', chance: 1 },
   ],
   queen: {
-    name: 'Queen Divine', hp: 16, ac: 4, atk: [6, 6], atkType: 'Holy',
-    vulnerable: ['Necrotic'], resistant: ['Frost'], immune: ['Holy', 'Physical'],
+    name: 'Queen Divine', hp: 13, ac: 4, atk: [6], atkType: 'Holy',
+    vulnerable: ['Necrotic'], resistant: ['Frost', 'Physical'], immune: ['Holy'],
     debuffEvery: 2, buffKingEvery: 3,
   },
   king: {
-    name: 'King Conquer', hp: 24, ac: 7, atk: [6, 6, 4], atkType: 'Physical',
-    vulnerable: ['Holy', 'Lightning'], resistant: ['Frost', 'Necrotic', 'Fire'], immune: [],
+    name: 'King Conquer', hp: 24, ac: 7, atk: [6, 6], atkType: 'Physical',
+    vulnerable: ['Holy', 'Lightning'], resistant: ['Physical'], immune: [],
     aoe: { every: 3, dice: [6, 6], type: 'Physical' },
   },
 };
@@ -226,7 +228,7 @@ export const DUO: DuoConfig = {
 // ============ BOSS ============
 export const BOSS: BossConfig = {
   name: 'Infernal Demon Lord', nameTH: 'ราชาปีศาจนรก',
-  ac: 8, atk: [6, 6, 6], atkType: 'Fire',
+  ac: 7, atk: [6, 6, 6], atkType: 'Fire',
   vulnerable: ['Holy'], resistant: ['Physical', 'Lightning'], immune: ['Necrotic', 'Fire'],
   aoe: { every: 2, dice: [6, 6], type: 'Fire' },
   rage: { every: 4, dice: [6, 6, 6, 6], type: 'Fire', target: 'lowest_ac' },
@@ -234,10 +236,13 @@ export const BOSS: BossConfig = {
 
 // ============ SHOP ITEMS ============
 export const SHOP_ITEMS: ShopItem[] = [
-  { name: 'Potion of Healing', type: 'consumable', cost: 15, effect: 'ฮีล HP 1 ตัว = 2d4 HP', shop: 'standard' },
-  { name: 'Full Heal', type: 'service', cost: 30, effect: 'ฮีล HP ทั้งทีมเต็ม (0 LOC หาก TPK)', shop: 'both' },
-  { name: 'Iron Ring', type: 'passive', cost: 25, effect: 'เพิ่ม AC ทั้งทีม +1 ตลอดเกม', shop: 'standard' },
-  { name: 'Fire Resist Cloak', type: 'passive', cost: 25, effect: 'ลด Fire Damage -1 ตลอดเกม (ทั้งทีม)', shop: 'standard' },
+  { name: 'Healing Potion', type: 'consumable', cost: 15, effect: 'ฮีล HP 1 ตัว = 1d6+1d4 HP', shop: 'standard' },
+  { name: 'Iron Ring', type: 'passive', cost: 35, effect: 'เพิ่ม AC ทั้งทีม +1 ตลอดเกม', shop: 'standard' },
+  { name: 'Elixir of Power', type: 'consumable', cost: 20, effect: 'ตัวละคร 1 ตัว ได้ Advantage 2 เทิร์น', shop: 'secret' },
+  { name: 'Phoenix Feather', type: 'consumable', cost: 40, effect: 'ชุบชีวิตตัวละครที่ตาย กลับมา HP เต็ม', shop: 'secret' },
+  { name: 'Holy Water', type: 'consumable', cost: 15, effect: 'ทำ Holy Damage 2d6 (ใครก็ใช้ได้)', shop: 'secret' },
+  { name: 'Whetstone', type: 'consumable', cost: 15, effect: 'เพิ่ม damage ครั้งถัดไป +3 (Fighter)', shop: 'standard', forClass: 'Fighter' },
+  { name: 'Resistant Cloak', type: 'passive', cost: 35, effect: 'ลด Damage -1 ตลอดเกม (ทั้งทีม)', shop: 'standard' },
   { name: 'Scroll: Taunt', type: 'skill_unlock', cost: 40, effect: 'ปลดล็อค Taunt ให้ Fighter (ถาวร)', shop: 'standard', forClass: 'Fighter' },
   { name: 'Scroll: Second Wind', type: 'skill_unlock', cost: 40, effect: 'ปลดล็อค Second Wind ให้ Fighter (ถาวร)', shop: 'secret', forClass: 'Fighter' },
   { name: 'Scroll: Frost Bolt', type: 'skill_unlock', cost: 30, effect: 'ปลดล็อค Frost Bolt ให้ Mage (ถาวร)', shop: 'standard', forClass: 'Mage' },
@@ -247,11 +252,6 @@ export const SHOP_ITEMS: ShopItem[] = [
   { name: 'Scroll: Daze', type: 'skill_unlock', cost: 40, effect: 'ปลดล็อค Daze ให้ Priest (ถาวร)', shop: 'standard', forClass: 'Priest' },
   { name: 'Scroll: Empower', type: 'skill_unlock', cost: 40, effect: 'ปลดล็อค Empower ให้ Priest (ถาวร)', shop: 'standard', forClass: 'Priest' },
   { name: 'Scroll: Stun Strike', type: 'temp_skill', cost: 20, effect: 'ใช้ Stun Strike 1 ครั้ง (หายหลังใช้)', shop: 'secret', forClass: 'Fighter' },
-  { name: 'Elixir of Power', type: 'consumable', cost: 20, effect: 'ตัวละคร 1 ตัว ได้ Advantage 2 เทิร์น', shop: 'secret' },
-  { name: 'Phoenix Feather', type: 'consumable', cost: 35, effect: 'ชุบชีวิตตัวละครที่ตาย กลับมา HP เต็ม', shop: 'secret' },
-  { name: 'Holy Water', type: 'consumable', cost: 15, effect: 'ทำ Holy Damage 2d6 (ใครก็ใช้ได้)', shop: 'secret' },
-  { name: 'Whetstone', type: 'consumable', cost: 15, effect: 'เพิ่ม damage ครั้งถัดไป +3 (Fighter)', shop: 'standard', forClass: 'Fighter' },
-  { name: 'Stun Bomb', type: 'consumable', cost: 30, effect: 'Stun มอนฯ 1 เทิร์น (ใครก็ใช้ได้)', shop: 'standard' },
 ];
 
 // ============ DAMAGE TYPE COLORS ============
