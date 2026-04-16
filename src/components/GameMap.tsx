@@ -150,7 +150,7 @@ export default function GameMap() {
 
         {/* Map image */}
         <img ref={imgRef} src="/UTCC_map.png" alt="UTCC Campus Map"
-          className="w-full h-auto block select-none"
+          className="w-fit h-fit block select-none"
           draggable={false} />
 
         {/* Pins overlay */}
@@ -190,7 +190,7 @@ export default function GameMap() {
 
                 {/* Rank badge */}
                 {pin.rank && (
-                  <div className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-extrabold border border-black/50"
+                  <div className="absolute -top-0 -right-0 w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-extrabold border border-black/50"
                     style={{ background: rankColor(pin.rank), color: '#fff' }}>
                     {pin.rank === 'Boss' ? '!' : pin.rank}
                   </div>
