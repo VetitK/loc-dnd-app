@@ -31,17 +31,106 @@ export const MAP_PINS_KEY = 'loc-dnd-map-pins';
 
 // Default pin positions (shared across all staff)
 export const DEFAULT_PINS: MapPin[] = [
-  { id: 'goblin', label: 'Goblin Scout', type: 'monster', emoji: '🗡️', image: '/cards/monsters/goblin.png', rank: 'C', x: 22.228800455729168, y: 56.83946739903604 },
-  { id: 'skeleton', label: 'Skeleton Warrior', type: 'monster', emoji: '💀', image: '/cards/monsters/skeleton.png', rank: 'C', x: 46.23579545454545, y: 64.34899131553895 },
-  { id: 'slime', label: 'Slime', type: 'monster', emoji: '🟢', image: '/cards/monsters/slime.png', rank: 'C', x: 51.28388748331917, y: 78.74923252361968 },
-  // { id: 'slime_king', label: 'Slime King', type: 'monster', emoji: '👑', image: '/cards/monsters/slime_king.png', rank: 'A', x: 55.996950708254424, y: 79.97154844866373 },
-  { id: 'dark_knight', label: 'Dark Knight', type: 'monster', emoji: '⚔️', image: '/cards/monsters/dark_knight.png', rank: 'B', x: 68.47616792929293, y: 75.1016497342261 },
-  { id: 'flame_serpent', label: 'Flame Serpent', type: 'monster', emoji: '🐍', image: '/cards/monsters/flame_serpent.png', rank: 'B', x: 45.865688131313135, y: 47.0508323079523 },
-  { id: 'lich', label: 'Lich King', type: 'monster', emoji: '☠️', image: '/cards/monsters/lich.png', rank: 'A', x: 79.22664141414143, y: 60.691607763599954 },
-  { id: 'duo', label: 'Queen & King', type: 'monster', emoji: '👑', image: '/cards/monsters/duo.png', rank: 'S', x: 84.7808837890625, y: 45.15971439483297 },
-  { id: 'boss', label: 'Infernal Demon Lord', type: 'boss', emoji: '👹', image: '/cards/monsters/boss.png', rank: 'Boss', x: 65.41377520320391, y: 46.32765785704688 },
-  { id: 'shop', label: 'ร้านค้า', type: 'shop', emoji: '🛒', image: '/cards/items/healing-potion.png', x: 37.037563131313135, y: 62.6855988566292 },
-];
+  {
+    "id": "goblin",
+    "label": "Goblin Scout",
+    "type": "monster",
+    "emoji": "🗡️",
+    "image": "/cards/monsters/goblin.png",
+    "rank": "C",
+    "x": 22.352356900107345,
+    "y": 55.98877298901076
+  },
+  {
+    "id": "skeleton",
+    "label": "Skeleton Warrior",
+    "type": "monster",
+    "emoji": "💀",
+    "image": "/cards/monsters/skeleton.png",
+    "rank": "C",
+    "x": 49.052607667330335,
+    "y": 75.0744332220281
+  },
+  {
+    "id": "slime",
+    "label": "Slime",
+    "type": "monster",
+    "emoji": "🟢",
+    "image": "/cards/monsters/slime.png",
+    "rank": "C",
+    "x": 38.43375157564663,
+    "y": 61.757606144876
+  },
+  {
+    "id": "slime_king",
+    "label": "Slime King",
+    "type": "monster",
+    "emoji": "👑",
+    "image": "/cards/monsters/slime_king.png",
+    "rank": "A",
+    "x": 21.02480502068941,
+    "y": 0.06125233896062276
+  },
+  {
+    "id": "dark_knight",
+    "label": "Dark Knight",
+    "type": "monster",
+    "emoji": "⚔️",
+    "image": "/cards/monsters/dark_knight.png",
+    "rank": "B",
+    "x": 60.116653526998675,
+    "y": 66.49186920428818
+  },
+  {
+    "id": "flame_serpent",
+    "label": "Flame Serpent",
+    "type": "monster",
+    "emoji": "🐍",
+    "image": "/cards/monsters/flame_serpent.png",
+    "rank": "B",
+    "x": 44.26687333805471,
+    "y": 49.96510942717433
+  },
+  {
+    "id": "lich",
+    "label": "Lich King",
+    "type": "monster",
+    "emoji": "☠️",
+    "image": "/cards/monsters/lich.png",
+    "rank": "A",
+    "x": 68.59062584906754,
+    "y": 61.41852146674799
+  },
+  {
+    "id": "duo",
+    "label": "Queen & King",
+    "type": "monster",
+    "emoji": "👑",
+    "image": "/cards/monsters/duo.png",
+    "rank": "S",
+    "x": 48.227481058834535,
+    "y": 85.19657607178671
+  },
+  {
+    "id": "boss",
+    "label": "Infernal Demon Lord",
+    "type": "boss",
+    "emoji": "👹",
+    "image": "/cards/monsters/boss.png",
+    "rank": "Boss",
+    "x": 67.3450298649064,
+    "y": 51.46101043098903
+  },
+  {
+    "id": "shop",
+    "label": "Shop",
+    "type": "shop",
+    "emoji": "🛒",
+    "image": "/cards/items/healing-potion.png",
+    "x": 45.990174200818664,
+    "y": 66.18121388179591
+  }
+]
 
 export function loadPins(): MapPin[] {
   try {
