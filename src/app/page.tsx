@@ -5,9 +5,11 @@ import CombatTracker from '@/components/CombatTracker';
 import LootRoller from '@/components/LootRoller';
 import Simulator from '@/components/Simulator';
 import GameMap from '@/components/GameMap';
+import PartyPage from '@/components/PartyPage';
 
 const TABS = [
   { id: 'ref', label: '📚 Reference', emoji: '📚' },
+  { id: 'party', label: '❤️ Party', emoji: '❤️' },
   { id: 'combat', label: '⚔️ Combat', emoji: '⚔️' },
   { id: 'loot', label: '🎲 Loot', emoji: '🎲' },
   { id: 'sim', label: '📊 Simulator', emoji: '📊' },
@@ -50,6 +52,7 @@ export default function Home() {
       {/* Content */}
       <div className="max-w-5xl mx-auto px-4 py-4 pb-24">
         {tab === 'ref' && <ReferencePage />}
+        {tab === 'party' && <PartyPage />}
         {tab === 'combat' && <CombatTracker />}
         {tab === 'loot' && <LootRoller />}
         {tab === 'sim' && <Simulator />}

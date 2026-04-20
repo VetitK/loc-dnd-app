@@ -1,6 +1,16 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { CLASSES, MONSTERS, DUO, BOSS } from '@/data/gameData';
+import {
+  PARTY_CLASS_IDS,
+  type PartyClassId,
+  type PartyState,
+  loadPartyState,
+  savePartyHp,
+  effectiveMaxHp,
+  effectiveAc,
+  resetPartyHpToFull,
+} from '@/lib/partyState';
 
 // === Types ===
 interface Combatant {
@@ -83,8 +93,13 @@ export default function CombatTracker() {
   const [duoDmg, setDuoDmg] = useState(0);
   const [result, setResult] = useState<FightResult | null>(null);
   const [confirmReset, setConfirmReset] = useState(false);
+  const [party, setParty] = useState<PartyState | null>(null);
 
-  useEffect(() => { setBossDmg(loadNum(BOSS_KEY)); setDuoDmg(loadNum(DUO_KEY)); }, []);
+  useEffect(() => {
+    setBossDmg(loadNum(BOSS_KEY));
+    setDuoDmg(loadNum(DUO_KEY));
+    setParty(loadPartyState());
+  }, []);
 
   // === Enter Initiative Phase (manual entry) ===
   const enterInitiative = () => {
@@ -103,9 +118,15 @@ export default function CombatTracker() {
       list.push({ id: 'monster', name: m.name, maxHp: m.hp, hp: m.hp, ac: m.ac, type: 'monster', initiative: 0, rollOrder: order++, color: '#ef4444', emoji: MON_EMOJI[m.id] || '👾', cardId: m.id });
     }
 
-    // Players listed after monsters
+    // Players listed after monsters — always reload persisted HP + buffs
+    const current = loadPartyState();
+    setParty(current);
     for (const cls of CLASSES) {
-      list.push({ id: cls.name.toLowerCase(), name: cls.name, maxHp: cls.hp, hp: cls.hp, ac: cls.ac, type: 'player', initiative: 0, rollOrder: order++, color: cls.color, emoji: cls.emoji, cardId: cls.name.toLowerCase() });
+      const id = cls.name.toLowerCase() as PartyClassId;
+      const maxHp = effectiveMaxHp(id, current.buffs);
+      const ac = effectiveAc(id, current.buffs);
+      const hp = Math.max(0, Math.min(maxHp, current.hp[id]));
+      list.push({ id, name: cls.name, maxHp, hp, ac, type: 'player', initiative: 0, rollOrder: order++, color: cls.color, emoji: cls.emoji, cardId: id });
     }
 
     setCombatants(list);
@@ -117,6 +138,8 @@ export default function CombatTracker() {
   };
 
   const sortByInitiative = () => {
+    // Tie-break by rollOrder (insertion order): monsters are inserted first, so
+    // on equal initiative rolls, monsters act before players.
     setCombatants(prev => [...prev].sort((a, b) => b.initiative - a.initiative || a.rollOrder - b.rollOrder));
   };
 
@@ -136,6 +159,9 @@ export default function CombatTracker() {
     setCombatants(prev => prev.map(c => {
       if (c.id !== id) return c;
       const newHp = c.maxHp === 9999 ? c.hp + delta : Math.min(c.maxHp, Math.max(0, c.hp + delta));
+      if (c.type === 'player' && PARTY_CLASS_IDS.includes(c.id as PartyClassId)) {
+        savePartyHp(c.id as PartyClassId, newHp);
+      }
       return { ...c, hp: newHp };
     }));
 
@@ -197,6 +223,12 @@ export default function CombatTracker() {
     }
 
     if (allPlayersDead) {
+      // TPK rule: team is healed to full (free) — persist it
+      if (party) {
+        const healed = resetPartyHpToFull(party);
+        for (const id of PARTY_CLASS_IDS) savePartyHp(id, healed.hp[id]);
+        setParty(healed);
+      }
       setResult({ outcome: 'tpk', loc: 0, items: [], dmgThisFight: fightDmg });
       setPhase('result');
       return;
@@ -382,8 +414,24 @@ export default function CombatTracker() {
   );
 
   // ==================== FIGHT PHASE ====================
+  const activeBuffLabels: string[] = [];
+  if (party?.buffs.lichCrown) activeBuffLabels.push('👑 +5 Max HP');
+  if (party?.buffs.resistantCloak) activeBuffLabels.push('🧥 Dmg -1');
+  if (party) {
+    const ringCount = PARTY_CLASS_IDS.filter(id => party.buffs.ironRing[id]).length;
+    if (ringCount > 0) activeBuffLabels.push(`💍 Iron Ring x${ringCount}`);
+  }
+
   return (
     <div>
+      {activeBuffLabels.length > 0 && (
+        <div className="mb-2 flex flex-wrap gap-1.5">
+          {activeBuffLabels.map(l => (
+            <span key={l} className="px-2 py-0.5 rounded text-[9px] font-bold bg-amber-500/10 text-amber-300 border border-amber-500/20">{l}</span>
+          ))}
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
         <div>

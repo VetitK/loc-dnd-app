@@ -453,7 +453,7 @@ mage_skills = (
     'Frost Bolt (ปลดล็อค): Frost Damage 1d6+1d4\n'
     'Lightning (ปลดล็อค): Lightning Damage 2d6\n'
     'Necrotic Blast (ปลดล็อค): Necrotic Damage 2d6\n'
-    'Holy Light (ปลดล็อค): Holy Damage 3d6'
+    'Holy Strike (ปลดล็อค): Holy Damage 3d6'
 )
 mage_row = ['Mage', '14', '6', mage_skills, 'หมวกแม่มด?\nคฑาเวทย์\nผ้าคลุม']
 
@@ -906,7 +906,7 @@ duo_data = [
     ['Vulnerable ตัวที่ 2', 'Holy \U0001f31f, Lightning \u26a1'],
     ['Resistant ตัวที่ 2', 'Physical \U0001f5e1\ufe0f'],
     ['Immune ตัวที่ 2', '-'],
-    ['ของดรอป', '100 LOC + Scroll: Holy Light + Phoenix Feather'],
+    ['ของดรอป', '100 LOC + Scroll: Holy Strike + Phoenix Feather'],
     ['กิมมิคพิเศษ Duo', 'ทั้ง 2 ตัวทอย Initiative แยกกัน (มีเทิร์นคนละเวลา) Queen buff King ด้วย +AC ทำให้ยิ่งสู้นาน King ยิ่งแข็ง Queen Immune ต่อ Holy แต่แพ้ Necrotic King แพ้ Holy/Lightning -> ใช้คนละธาตุจัดการ'],
 ]
 
@@ -954,7 +954,7 @@ boss_data = [
     ['Vulnerable', 'Holy \U0001f31f'],
     ['Resistant', 'Physical \U0001f5e1\ufe0f, Lightning \u26a1'],
     ['Immune', 'Necrotic \U0001f480, Fire \U0001f525'],
-    ['กิมมิคพิเศษ', 'บอสแพ้ทาง Holy แน่นอน ทีมที่มี Holy Light จะได้เปรียบมาก\nInfernal Rage ทุก 4 เทิร์น เล็ง AC ต่ำสุด (Mage/Priest) ทำ damage มหาศาล ต้องฮีลให้ทัน\nResistant Cloak จะช่วยลด damage ได้\nBoss Raid: 5 เทิร์นต่อรอบ ตีได้ไม่จำกัดรอบ Damage สะสมตลอด!\nDamage จาก Duo (Rank S) นับรวมเป็น Total Damage ด้วย!'],
+    ['กิมมิคพิเศษ', 'บอสแพ้ทาง Holy แน่นอน ทีมที่มี Holy Strike จะได้เปรียบมาก\nInfernal Rage ทุก 4 เทิร์น เล็ง AC ต่ำสุด (Mage/Priest) ทำ damage มหาศาล ต้องฮีลให้ทัน\nResistant Cloak จะช่วยลด damage ได้\nBoss Raid: 5 เทิร์นต่อรอบ ตีได้ไม่จำกัดรอบ Damage สะสมตลอด!\nDamage จาก Duo (Rank S) นับรวมเป็น Total Damage ด้วย!'],
 ]
 
 table = doc.add_table(rows=len(boss_data), cols=2)
@@ -1033,7 +1033,7 @@ drop_data = [
     ['มอนฯ Rank C', '15-20 LOC', 'Potion of Healing (50%) / Scroll สกิล (Frost Bolt 40%, Daze 30%, Armor Break 10%) / Random Scroll (25%)'],
     ['มอนฯ Rank B', '40-45 LOC', 'Iron Ring (100%) / Scroll: Lightning (40%) / Scroll: Armor Break (20%) / Necrotic Blast (30%) / Potion of Healing (100%) / Scroll: Empower (30%)'],
     ['มอนฯ Rank A', '65 LOC', 'Lich Crown (100%) + Scroll: Taunt (50%)'],
-    ['มอนฯ Rank S', '100 LOC', 'Scroll: Holy Light + Phoenix Feather'],
+    ['มอนฯ Rank S', '100 LOC', 'Scroll: Holy Strike + Phoenix Feather'],
     ['Boss', 'ไม่ดรอป', 'บอสไม่มีวันตาย เป้าหมายคือทำ damage ให้มากที่สุด'],
 ]
 
@@ -1145,7 +1145,7 @@ doc.add_paragraph(' ')
 # 16.2
 add_heading2(doc, '16.2 Economy Balance')
 add_normal(doc, '\u2022   \tทีมควรตี Rank C 2-3 ตัว ถึงจะมีเงินซื้อ Full Heal ได้ 1 ครั้ง (30 LOC)')
-add_normal(doc, '\u2022   \tRank S ดรอป Holy Light ซึ่งสำคัญมากสำหรับตีบอส (Infernal Demon Lord แพ้ทาง Holy)')
+add_normal(doc, '\u2022   \tRank S ดรอป Holy Strike ซึ่งสำคัญมากสำหรับตีบอส (Infernal Demon Lord แพ้ทาง Holy)')
 add_normal(doc, '\u2022   \tร้านค้ามีทุกอย่างรวมกัน: Potion, Full Heal, Scroll ปลดล็อคสกิล, ไอเทมพิเศษ')
 add_normal(doc, '\u2022   \tทีมที่ฟาร์มเก่ง + ใช้เงินฉลาด จะได้เปรียบมาก')
 
@@ -1155,7 +1155,7 @@ doc.add_paragraph(' ')
 add_heading2(doc, '16.3 Damage คาดการณ์ต่อเทิร์น (Average)')
 add_normal(doc, '\u2022   \tFighter Sword Slash: avg 5.5/เทิร์น (1d6+1d4)')
 add_normal(doc, '\u2022   \tMage Fireball: avg 5.5/เทิร์น (1d6+1d4) | Frost Bolt: avg 5.5 (1d6+1d4) | Lightning/Necrotic: avg 7 (2d6)')
-add_normal(doc, '\u2022   \tMage Holy Light: avg 10.5/เทิร์น (3d6) หรือ avg 21 ถ้า Vulnerable!')
+add_normal(doc, '\u2022   \tMage Holy Strike: avg 10.5/เทิร์น (3d6) หรือ avg 21 ถ้า Vulnerable!')
 add_normal(doc, '\u2022   \tPriest Heal: avg 5.5/เทิร์น (1d6+1d4)')
 add_normal(doc, '\u2022   \tPriest Amplify: เพิ่ม avg 3.5/เทิร์น (1d6) ให้เพื่อน')
 

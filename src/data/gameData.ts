@@ -237,7 +237,7 @@ export const BOSS: BossConfig = {
 // ============ SHOP ITEMS ============
 export const SHOP_ITEMS: ShopItem[] = [
   { name: 'Healing Potion', type: 'consumable', cost: 15, effect: 'ฮีล HP 1 ตัว = 1d6+1d4 HP', shop: 'standard' },
-  { name: 'Iron Ring', type: 'passive', cost: 35, effect: 'เพิ่ม AC ทั้งทีม +1 ตลอดเกม', shop: 'standard' },
+  { name: 'Iron Ring', type: 'passive', cost: 35, effect: 'เพิ่ม AC +1 ตลอดเกม (1 คน · สวมได้สูงสุด 1 วงต่อคน)', shop: 'standard' },
   { name: 'Elixir of Power', type: 'consumable', cost: 20, effect: 'ตัวละคร 1 ตัว ได้ Advantage 2 เทิร์น', shop: 'secret' },
   { name: 'Phoenix Feather', type: 'consumable', cost: 40, effect: 'ชุบชีวิตตัวละครที่ตาย กลับมา HP เต็ม', shop: 'secret' },
   { name: 'Holy Water', type: 'consumable', cost: 15, effect: 'ทำ Holy Damage 2d6 (ใครก็ใช้ได้)', shop: 'secret' },
